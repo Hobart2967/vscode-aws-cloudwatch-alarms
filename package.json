@@ -1,0 +1,71 @@
+{
+  "name": "aws-cloudwatch-alarms",
+  "displayName": "aws-cloudwatch-alarms",
+  "description": "Notifies you about triggered alarms within VSCode",
+  "version": "0.0.1",
+  "author": {
+    "name": "Hobart2967",
+    "email": "hobart2967@outlook.com",
+    "url": "https://github.com/Hobart2967"
+  },
+  "engines": {
+    "vscode": "^1.87.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "hobart2967-cloudwatch-alarms-sidebar",
+          "title": "CloudWatch Alarms",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "hobart2967-cloudwatch-alarms-sidebar": [
+        {
+          "type": "webview",
+          "id": "hobart2967-cloudwatch-alarms-sidebar",
+          "name": "CloudWatch Alarms",
+          "icon": "media/icon.svg",
+          "contextualTitle": "Alarms"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile && yarn run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test",
+    "compile:webviews": "cd webviews && vite build"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.87.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.0.2",
+    "@vscode/test-cli": "^0.0.6",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.5",
+    "vite-plugin-solid": "^2.10.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudwatch": "^3.529.1",
+    "@aws-sdk/shared-ini-file-loader": "^3.374.0",
+    "rxjs": "^7.8.1",
+    "solid-js": "^1.8.15"
+  }
+}
