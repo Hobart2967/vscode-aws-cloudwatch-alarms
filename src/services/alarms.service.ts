@@ -59,18 +59,23 @@ export class AlarmsService {
   }
 
   async getAlarmsForProfilesAndRegions(regions: string[]): Promise<CloudWatchAlarm[]> {
-    const alarms = await Promise.all(regions.map(region => this.getAlarms('default', region)));
-    return alarms.reduce((prev, cur) => ([
-      ...prev,
-      ...cur
-    ]), []);
+    try {
+      const alarms = await Promise.all(regions.map(region => this.getAlarms('default', region)));
+      return alarms.reduce((prev, cur) => ([
+        ...prev,
+        ...cur
+      ]), []);
+    } catch (error) {
+      vscode.window.showErrorMessage('Could not retrieve alarm information: ' + (error as Error).message);
+      return [];
+    }
   }
 
   private async showAlarmMessage(alarm: CloudWatchAlarm) {
     const buttonCaption = 'Take a look';
     const result = await vscode.window.showErrorMessage(
       'Alarm triggered: ' + alarm.AlarmName,
-      ...[buttonCaption]);
+      ...[buttonCaption, 'Dismiss']);
 
     if (result !== buttonCaption) {
       return;

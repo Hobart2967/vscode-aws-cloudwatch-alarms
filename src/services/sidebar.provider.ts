@@ -68,6 +68,8 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this._extensionUri, "dist-webviews", "assets/index.js"));
     const styleMainUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "dist-webviews", "assets/index.css"));
+    const codiconsUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
 
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
@@ -87,6 +89,7 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         <link href="${styleResetUri}" rel="stylesheet">
         <link href="${styleVSCodeUri}" rel="stylesheet">
         <link href="${styleMainUri}" rel="stylesheet">
+        <link href="${codiconsUri}" rel="stylesheet" />
         <script nonce="${nonce}">
             window.vscode = acquireVsCodeApi();
         </script>

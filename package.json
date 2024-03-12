@@ -83,6 +83,7 @@
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.529.1",
     "@aws-sdk/shared-ini-file-loader": "^3.374.0",
+    "@vscode/codicons": "^0.0.35",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "rxjs": "^7.8.1",
     "solid-js": "^1.8.15"

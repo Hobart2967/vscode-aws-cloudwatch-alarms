@@ -67,6 +67,10 @@ export function Alarm(props: AlarmProps) {
         color: inherit;
         text-decoration: inherit;
         outline: none;
+        display: block;
+        max-width: calc(100% - 24px);
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .alarm-list li.in-alarm {

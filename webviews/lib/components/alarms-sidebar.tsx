@@ -33,46 +33,7 @@ export function AlarmsSidebar(props: any): JSXElement {
         font-size: 11px;
       }
 
-      .alarm-list-wrapper {
-        margin-bottom: 16px;
-      }
 
-      .alarm-list-wrapper .title {
-        display: flex;
-
-        text-transform: uppercase;
-        font-weight: bold;
-        cursor: pointer;
-        padding: 4px 8px;
-      }
-
-      .alarm-list {
-        margin: 0;
-        padding: 0;
-      }
-
-      .alarm-list li {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding: 4px 8px;
-      }
-
-      .alarm-list li a {
-        font-size: 13px;
-        color: inherit;
-        text-decoration: inherit;
-        outline: none;
-      }
-
-      .alarm-list li.in-alarm {
-        color: #ff0000;
-      }
-
-      .alarm-list li:hover {
-        background: rgba(255, 255, 255, 0.1);
-        cursor: pointer;
-      }
     `}
     </style>
 
@@ -83,14 +44,17 @@ export function AlarmsSidebar(props: any): JSXElement {
 
     <AlarmListWrapper
       title="In Alarm"
+      stateValue={StateValue.ALARM}
       searchTerm={searchTerm()}
       alarms={alarmsInAlarm()}></AlarmListWrapper>
     <AlarmListWrapper
       title="Insufficient Data"
+      stateValue={StateValue.INSUFFICIENT_DATA}
       searchTerm={searchTerm()}
       alarms={alarmsMissingData()}></AlarmListWrapper>
     <AlarmListWrapper
       title="Ok"
+      stateValue={StateValue.OK}
       searchTerm={searchTerm()}
       alarms={alarmsOk()}></AlarmListWrapper>
   </div>;
