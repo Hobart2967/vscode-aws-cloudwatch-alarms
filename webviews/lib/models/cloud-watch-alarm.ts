@@ -1,3 +1,4 @@
 import { CompositeAlarm, MetricAlarm } from '@aws-sdk/client-cloudwatch';
 
-export type CloudWatchAlarm = MetricAlarm | CompositeAlarm;
+export type CloudWatchAlarmBase = MetricAlarm | CompositeAlarm;
+export type CloudWatchAlarm = CloudWatchAlarmBase & { region: string };

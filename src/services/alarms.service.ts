@@ -14,6 +14,7 @@ import * as vscode from 'vscode';
 import { CloudWatchAlarm } from './cloud-watch-alarm';
 
 export class AlarmsService {
+  private readonly _alarmBaseUrl = (region: string) => `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#alarmsV2:alarm/`;
   private readonly _intervalPeriod = 10000;
   private _alarms!: Observable<CloudWatchAlarm[]>;
   private _freshAlerts!: Observable<CloudWatchAlarm[]>;
@@ -25,7 +26,8 @@ export class AlarmsService {
   public initialize() {
     this._alarms = interval(this._intervalPeriod)
       .pipe(startWith(0))
-      .pipe(switchMap(() => this.getAlarms('default')))
+      .pipe(map(() => vscode.workspace.getConfiguration('hobart2967.aws-cloudwatch-alarms').get("regions")! as string[]))
+      .pipe(switchMap(regions => this.getAlarmsForProfilesAndRegions(regions)))
       .pipe(share());
 
     this._freshAlerts = this._alarms
@@ -34,7 +36,7 @@ export class AlarmsService {
         pairwise())
       .pipe(
         map(([previousList, currentList]) => {
-          const currentAlarms = (currentList || []).filter(currentState => currentState.StateValue === StateValue.ALARM)
+          const currentAlarms = (currentList || []).filter(currentState => currentState.StateValue === StateValue.ALARM);
           const unknownAlarms = currentAlarms.filter(currentState => !previousList.map(previousState => previousState.AlarmArn).includes(currentState.AlarmArn));
           const changedAlarms = currentAlarms.filter(currentState =>
             previousList.some(previousState => previousState.AlarmArn === currentState.AlarmArn && currentState.StateUpdatedTimestamp!.getTime() !== previousState.StateUpdatedTimestamp!.getTime()));
@@ -50,15 +52,36 @@ export class AlarmsService {
       .pipe(filter(alarms => alarms.length > 0))
       .subscribe(alarms => {
         for (const alarm of alarms) {
-          vscode.window.showErrorMessage('Alarm triggered: ' + alarm.AlarmName);
+          this.showAlarmMessage(alarm);
         }
       });
 
   }
 
-  private async getAlarms(profile: string): Promise<Array<CloudWatchAlarm>> {
+  async getAlarmsForProfilesAndRegions(regions: string[]): Promise<CloudWatchAlarm[]> {
+    const alarms = await Promise.all(regions.map(region => this.getAlarms('default', region)));
+    return alarms.reduce((prev, cur) => ([
+      ...prev,
+      ...cur
+    ]), []);
+  }
+
+  private async showAlarmMessage(alarm: CloudWatchAlarm) {
+    const buttonCaption = 'Take a look';
+    const result = await vscode.window.showErrorMessage(
+      'Alarm triggered: ' + alarm.AlarmName,
+      ...[buttonCaption]);
+
+    if (result !== buttonCaption) {
+      return;
+    }
+
+    vscode.env.openExternal(vscode.Uri.parse(`${this._alarmBaseUrl(alarm.region)}${alarm.AlarmName}`));
+  }
+
+  private async getAlarms(profile: string, region: string): Promise<Array<CloudWatchAlarm>> {
     const config: CloudWatchClientConfig = {
-      region: 'eu-central-1'
+      region
     };
     const client = new CloudWatchClient(config);
 
@@ -77,6 +100,9 @@ export class AlarmsService {
         ...(response.MetricAlarms || []));
     } while (NextToken);
 
-    return alarms;
+    return alarms.map(alarm => ({
+      region,
+      ...alarm
+    }));
   }
 }

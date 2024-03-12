@@ -19,6 +19,7 @@
     "jsxImportSource": "solid-js",
     "types": [
       "solid-js",
+      "vite-plugin-solid-svg/types-component-solid"
       // "solid-js/dom"
     ]
   },

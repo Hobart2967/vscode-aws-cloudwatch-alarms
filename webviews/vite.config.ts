@@ -2,10 +2,11 @@
 import * as path from 'path';
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+import solidSvg from 'vite-plugin-solid-svg';
 
 export default defineConfig({
   root: path.join(__dirname),
-  plugins: [solidPlugin()],
+  plugins: [solidPlugin(), solidSvg()],
   build: {
     outDir: path.join(__dirname, '..', 'dist-webviews'),
     rollupOptions: {

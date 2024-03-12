@@ -1,6 +1,6 @@
 # aws-cloudwatch-alarms README
 
-This is the README for your extension "aws-cloudwatch-alarms". After writing up a brief description, we recommend including the following sections.
+
 
 ## Features
 

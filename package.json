@@ -8,6 +8,10 @@
     "email": "hobart2967@outlook.com",
     "url": "https://github.com/Hobart2967"
   },
+  "repository": {
+    "url": "https://github.com/Hobart2967/vscode-aws-cloudwatch-alarms",
+    "type": "git"
+  },
   "engines": {
     "vscode": "^1.87.0"
   },
@@ -15,10 +19,22 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "AWS CloudWatch Alarms",
+      "properties": {
+        "hobart2967.aws-cloudwatch-alarms.regions": {
+          "type": "array",
+          "default": [
+            "eu-central-1"
+          ],
+          "description": "Declares which regions to get alarm information for."
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -47,7 +63,8 @@
     "pretest": "yarn run compile && yarn run lint",
     "lint": "eslint src --ext ts",
     "test": "vscode-test",
-    "compile:webviews": "cd webviews && vite build"
+    "compile:webviews": "cd webviews && vite build",
+    "compile:webviews:watch": "cd webviews && vite build --watch"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
@@ -60,11 +77,13 @@
     "eslint": "^8.56.0",
     "typescript": "^5.3.3",
     "vite": "^5.1.5",
-    "vite-plugin-solid": "^2.10.1"
+    "vite-plugin-solid": "^2.10.1",
+    "vite-plugin-solid-svg": "^0.8.0"
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.529.1",
     "@aws-sdk/shared-ini-file-loader": "^3.374.0",
+    "@vscode/webview-ui-toolkit": "^1.4.0",
     "rxjs": "^7.8.1",
     "solid-js": "^1.8.15"
   }

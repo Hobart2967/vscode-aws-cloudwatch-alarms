@@ -7,7 +7,7 @@
 			"type": "npm",
 			"script": "compile",
 			"problemMatcher": "$tsc-watch",
-			"isBackground": false,
+			"isBackground": true,
 			"presentation": {
 				"reveal": "never"
 			},
@@ -15,6 +15,19 @@
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"type": "npm",
+			"script": "compile:webviews:watch",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"dependsOn": []
 		}
 	]
 }
