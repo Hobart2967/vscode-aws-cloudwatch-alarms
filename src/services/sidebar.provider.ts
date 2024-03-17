@@ -1,17 +1,19 @@
 import { StateValue } from '@aws-sdk/client-cloudwatch';
+import { inject, injectable } from 'inversify';
 import { BehaviorSubject } from 'rxjs';
 import * as vscode from 'vscode';
 
+import { EXTENSION_URI } from '../constants/extension-uri';
 import { AlarmsService } from './alarms.service';
 import { CloudWatchAlarm } from './cloud-watch-alarm';
 
+@injectable()
 export class SidebarProvider implements vscode.WebviewViewProvider {
   private _view?: vscode.WebviewView;
-  private _doc?: vscode.TextDocument;
 
   public constructor(
-    private readonly _extensionUri: vscode.Uri,
-    private readonly _alarmsService: AlarmsService) { }
+    @inject(EXTENSION_URI) private readonly _extensionUri: vscode.Uri,
+    @inject(AlarmsService) private readonly _alarmsService: AlarmsService) { }
 
   public resolveWebviewView(webviewView: vscode.WebviewView) {
     this._view = webviewView;

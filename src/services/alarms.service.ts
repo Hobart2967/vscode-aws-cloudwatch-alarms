@@ -7,12 +7,14 @@ import {
   MetricAlarm,
   StateValue,
 } from '@aws-sdk/client-cloudwatch';
+import { injectable } from 'inversify';
 import { interval, map, Observable, pairwise, startWith, switchMap } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 import * as vscode from 'vscode';
 
 import { CloudWatchAlarm } from './cloud-watch-alarm';
 
+@injectable()
 export class AlarmsService {
   private readonly _alarmBaseUrl = (region: string) => `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#alarmsV2:alarm/`;
   private readonly _intervalPeriod = 10000;
@@ -55,7 +57,6 @@ export class AlarmsService {
           this.showAlarmMessage(alarm);
         }
       });
-
   }
 
   async getAlarmsForProfilesAndRegions(regions: string[]): Promise<CloudWatchAlarm[]> {

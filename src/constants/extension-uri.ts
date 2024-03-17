@@ -1,0 +1,1 @@
+export const EXTENSION_URI = 'EXTENSION_URI';
