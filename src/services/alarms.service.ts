@@ -8,7 +8,7 @@ import {
   StateValue,
 } from '@aws-sdk/client-cloudwatch';
 import { injectable } from 'inversify';
-import { interval, map, Observable, pairwise, startWith, switchMap } from 'rxjs';
+import { interval, map, Observable, pairwise, startWith, Subscription, switchMap } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 import * as vscode from 'vscode';
 
@@ -20,12 +20,26 @@ export class AlarmsService {
   private readonly _intervalPeriod = 10000;
   private _alarms!: Observable<CloudWatchAlarm[]>;
   private _freshAlerts!: Observable<CloudWatchAlarm[]>;
+  private _subscription: Subscription|null = null;
+  private _lastRetrievalError: string|null = null;
 
   public get alarms() : Observable<CloudWatchAlarm[]> {
     return this._alarms;
   }
 
+
+  public shutdown() {
+    if (!this._subscription) {
+      return;
+    }
+
+    this._subscription.unsubscribe();
+    this._subscription = null;
+  }
+
   public initialize() {
+    this._subscription = new Subscription();
+
     this._alarms = interval(this._intervalPeriod)
       .pipe(startWith(0))
       .pipe(map(() => vscode.workspace.getConfiguration('hobart2967.aws-cloudwatch-alarms').get("regions")! as string[]))
@@ -50,13 +64,15 @@ export class AlarmsService {
           return result;
         }));
 
-    this._freshAlerts
-      .pipe(filter(alarms => alarms.length > 0))
-      .subscribe(alarms => {
+    const freshAlertsWhenActive = this._freshAlerts
+      .pipe(filter(alarms => alarms.length > 0));
+
+    this._subscription.add(
+      freshAlertsWhenActive.subscribe(alarms => {
         for (const alarm of alarms) {
           this.showAlarmMessage(alarm);
         }
-      });
+      }));
   }
 
   async getAlarmsForProfilesAndRegions(regions: string[]): Promise<CloudWatchAlarm[]> {
@@ -67,7 +83,11 @@ export class AlarmsService {
         ...cur
       ]), []);
     } catch (error) {
-      vscode.window.showErrorMessage('Could not retrieve alarm information: ' + (error as Error).message);
+      const errorMessage = (error as Error).message;
+      if (this._lastRetrievalError !== errorMessage) {
+        this._lastRetrievalError = errorMessage;
+        vscode.window.showErrorMessage('Could not retrieve alarm information: ' + errorMessage);
+      }
       return [];
     }
   }

@@ -13,5 +13,7 @@ export class AlarmsBootstrapper extends Bootstrapper {
     this._alarmsService.initialize();
   }
 
-  public async onDestroy(): Promise<void> { }
+  public async onDestroy(): Promise<void> {
+    this._alarmsService.shutdown();
+  }
 }
