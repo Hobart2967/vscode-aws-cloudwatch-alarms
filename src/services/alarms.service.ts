@@ -52,10 +52,16 @@ export class AlarmsService {
         pairwise())
       .pipe(
         map(([previousList, currentList]) => {
-          const currentAlarms = (currentList || []).filter(currentState => currentState.StateValue === StateValue.ALARM);
-          const unknownAlarms = currentAlarms.filter(currentState => !previousList.map(previousState => previousState.AlarmArn).includes(currentState.AlarmArn));
+          const currentAlarms = (currentList || []).filter(currentState =>
+            currentState.StateValue === StateValue.ALARM);
+          const unknownAlarms = currentAlarms.filter(currentState =>
+            !previousList
+              .map(previousState => previousState.AlarmArn)
+              .includes(currentState.AlarmArn));
           const changedAlarms = currentAlarms.filter(currentState =>
-            previousList.some(previousState => previousState.AlarmArn === currentState.AlarmArn && currentState.StateUpdatedTimestamp!.getTime() !== previousState.StateUpdatedTimestamp!.getTime()));
+            previousList.some(previousState =>
+                 previousState.AlarmArn === currentState.AlarmArn
+              && currentState.StateUpdatedTimestamp!.getTime() !== previousState.StateUpdatedTimestamp!.getTime()));
 
           const result = currentAlarms.filter(current =>
             unknownAlarms.map(x => x.AlarmArn).includes(current.AlarmArn) ||
@@ -75,7 +81,7 @@ export class AlarmsService {
       }));
   }
 
-  async getAlarmsForProfilesAndRegions(regions: string[]): Promise<CloudWatchAlarm[]> {
+  private async getAlarmsForProfilesAndRegions(regions: string[]): Promise<CloudWatchAlarm[]> {
     try {
       const alarms = await Promise.all(regions.map(region => this.getAlarms('default', region)));
       return alarms.reduce((prev, cur) => ([
@@ -109,6 +115,7 @@ export class AlarmsService {
     const config: CloudWatchClientConfig = {
       region
     };
+
     const client = new CloudWatchClient(config);
 
     let NextToken = undefined;
