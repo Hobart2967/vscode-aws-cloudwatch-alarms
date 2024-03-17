@@ -77,7 +77,10 @@ function setupContainer(context: ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {
-
+export async function deactivate() {
+	const bootstrappers = container.getAll(Bootstrapper);
+	for (const bootstrapper of bootstrappers.filter(x => !!x.onDestroy)) {
+		await bootstrapper.onDestroy!();
+	}
 }
 
