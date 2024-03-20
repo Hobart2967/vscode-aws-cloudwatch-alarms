@@ -63,11 +63,18 @@
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile && yarn run lint",
     "lint": "eslint src --ext ts",
+    "semantic-release": "semantic-release",
     "test": "vscode-test",
     "compile:webviews": "cd webviews && vite build",
     "compile:webviews:watch": "cd webviews && vite build --watch"
   },
   "devDependencies": {
+    "@semantic-release/commit-analyzer": "^12.0.0",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^10.0.2",
+    "@semantic-release/npm": "^12.0.0",
+    "@semantic-release/release-notes-generator": "^12.1.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/vscode": "^1.87.0",
