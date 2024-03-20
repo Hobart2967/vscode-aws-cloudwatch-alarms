@@ -28,7 +28,7 @@ This extension contributes the following settings:
 
 ## Known Issues
 
-Currently, only the default profile configured for your AWS CLI can be used.
+Currently, only the environment variables configured for your AWS CLI can be used.
 
 ## Feature ideas coming next releases:
 
