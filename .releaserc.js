@@ -15,6 +15,13 @@ module.exports = {
         }
       }
     ],
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": false,
+        "tarballDir": "pkg-dist"
+      }
+    ],
     "@semantic-release/release-notes-generator",
     "@semantic-release/github",
     ["@semantic-release/git", {
