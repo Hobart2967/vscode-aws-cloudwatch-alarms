@@ -2,7 +2,7 @@
   "name": "aws-cloudwatch-alarms",
   "displayName": "aws-cloudwatch-alarms",
   "description": "Notifies you about triggered alarms within VSCode",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "publisher": "hobart2967",
   "author": {
     "name": "Hobart2967",
