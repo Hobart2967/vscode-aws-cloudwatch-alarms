@@ -24,7 +24,7 @@ module.exports = {
 
     // Deploy Visual Studio Extension to market place
     ["@semantic-release/exec", {
-      "publishCmd": "vsce publish"
+      "publishCmd": "vsce publish -p " + process.env.AZURE_TOKEN
     }],
   ]
 }

@@ -22,6 +22,8 @@ jobs:
           restore-keys: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
       - name: NPM Install
         run: npm i
+      - name: Build
+        run: npm run compile && npm run compile:webviews
       - name: Release Extension
         if: startsWith(github.ref_name, 'main')
         env:
