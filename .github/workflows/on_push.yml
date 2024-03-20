@@ -24,4 +24,6 @@ jobs:
         run: npm i
       - name: Release Extension
         if: startsWith(github.ref_name, 'main')
+        env:
+          GITHUB_TOKEN: ${{github.token}}
         run: npm install -g @vscode/vsce && npm run semantic-release
