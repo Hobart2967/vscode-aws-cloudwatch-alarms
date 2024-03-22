@@ -1,10 +1,10 @@
 import { StateValue } from '@aws-sdk/client-cloudwatch';
 import { createSignal, JSXElement } from 'solid-js';
 
-import { CloudWatchAlarm } from '../models/cloud-watch-alarm';
+import { CloudWatchAlarm, CloudWatchAlarmsPerProfile } from '../models/cloud-watch-alarm';
 import { AlarmListWrapper } from './alarm-list-wrapper';
 
-type AlarmsUpdate = Event & { data: { alarms: CloudWatchAlarm[] }};
+type AlarmsUpdate = Event & { data: { alarms: CloudWatchAlarmsPerProfile }};
 export function AlarmsSidebar(props: any): JSXElement {
   vscode.postMessage({ type: 'onReady' });
 
@@ -19,14 +19,31 @@ export function AlarmsSidebar(props: any): JSXElement {
         a.AlarmName! === b.AlarmName! ? 0 : -1);
     };
 
-    const inAlarm = message.data.alarms.filter(x => x.StateValue === StateValue.ALARM);
-    const ok = message.data.alarms.filter(x => x.StateValue === StateValue.OK);
-    const missingData = message.data.alarms.filter(x => x.StateValue === StateValue.INSUFFICIENT_DATA);
+    const alarms = flattenAlarms(message.data.alarms);
+
+    const inAlarm = alarms.filter(x => x.StateValue === StateValue.ALARM);
+    const ok = alarms.filter(x => x.StateValue === StateValue.OK);
+    const missingData = alarms.filter(x => x.StateValue === StateValue.INSUFFICIENT_DATA);
 
     setAlarmsOk(ok.sort(sorter));
     setAlarmsInAlarm(inAlarm.sort(sorter));
     setAlarmsMissingData(missingData.sort(sorter));
   });
+
+  function flattenAlarms(alarmsPerProfile: CloudWatchAlarmsPerProfile): CloudWatchAlarm[] {
+    return Object
+      .entries(alarmsPerProfile)
+      .reduce((prev, [_, alarmsInProfile]) => [
+        ...prev,
+        ...Object
+          .entries(alarmsInProfile)
+          .reduce((prev, [_, alarmsInRegion]) => [
+            ...prev,
+            ...alarmsInRegion
+          ], [] as CloudWatchAlarm[])
+      ], [] as CloudWatchAlarm[]);
+  }
+
   return <div class="alarm-list-body">
     <style type="text/css">{`
       .alarm-list-body {

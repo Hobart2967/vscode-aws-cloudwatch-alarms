@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 
 import { EXTENSION_URI } from '../constants/extension-uri';
 import { AlarmsService } from './alarms.service';
-import { CloudWatchAlarm } from './cloud-watch-alarm';
+import { CloudWatchAlarmsPerProfile } from './cloud-watch-alarm';
 
 @injectable()
 export class SidebarProvider implements vscode.WebviewViewProvider {
@@ -26,13 +26,16 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    const sub = new BehaviorSubject<CloudWatchAlarm[]>([]);
+    const sub = new BehaviorSubject<CloudWatchAlarmsPerProfile>({});
 
     this._alarmsService.alarms.subscribe(x => sub.next(x));
 
     sub.subscribe(x => this._view!.badge = {
       tooltip: 'Alarms triggered to state ALARM',
-      value: x.filter(x => x.StateValue === StateValue.ALARM).length
+      value: this._alarmsService
+        .flattenAlarms(x)
+        .filter(x => x.StateValue === StateValue.ALARM)
+        .length
     });
 
     // Listen for messages from the Sidebar component and execute action

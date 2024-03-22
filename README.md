@@ -16,6 +16,10 @@ This includes:
 ![](./docs/sidebar.png)
 ![](./docs/notification.png)
 
+You can use the command palette and search for AWS CloudWatch Alarms to find a list of available helpful utilities:
+
+![](./docs/command-palette.png)
+
 ## Requirements
 
 You need to have an established session of your AWS CLI default profile to make the extension work.
@@ -24,7 +28,9 @@ You need to have an established session of your AWS CLI default profile to make 
 
 This extension contributes the following settings:
 
-* `hobart2967.aws-cloudwatch-alarms.regions`: List of regions to query alarms for
+* `hobart2967.aws-cloudwatch-alarms.regions`: List of regions to query alarms for. Can be any of the AWS region constants.
+* `hobart2967.aws-cloudwatch-alarms.profiles`: List of profiles to use when querying alarms. Needs to be a list of profile names listed in `$HOME/.aws/credentials`
+* `hobart2967.aws-cloudwatch-alarms.credentials-source`: Either `env` or `profile` - depending on if you want environment variables or profile credentials to be used.
 
 ## Known Issues
 

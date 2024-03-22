@@ -33,9 +33,42 @@
             "eu-central-1"
           ],
           "description": "Declares which regions to get alarm information for."
+        },
+        "hobart2967.aws-cloudwatch-alarms.profiles": {
+          "type": "array",
+          "default": [
+            "default"
+          ],
+          "description": "Declares which profiles to get alarm information for."
+        },
+        "hobart2967.aws-cloudwatch-alarms.credentials-source": {
+          "type": "string",
+          "default": "env",
+          "enum": [
+            "env",
+            "profile"
+          ],
+          "enumDescriptions": [
+            "Uses AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY from your environment",
+            "Uses keys from your profile ($HOME/.aws/credentials)"
+          ],
+          "description": "Where should this extension pull credentials from?"
         }
       }
     },
+    "commands": [{
+      "command": "hobart2967.aws-cloudwatch-alarms.pick-profiles",
+      "title": "AWS CloudWatch Alarms: Pick profiles to query"
+    },{
+      "command": "hobart2967.aws-cloudwatch-alarms.pick-credentials-source",
+      "title": "AWS CloudWatch Alarms: Pick credentials source"
+    },{
+      "command": "hobart2967.aws-cloudwatch-alarms.pick-regions",
+      "title": "AWS CloudWatch Alarms: Pick regions to query"
+    }, {
+      "command": "hobart2967.aws-cloudwatch-alarms.refresh-alarms",
+      "title": "AWS CloudWatch Alarms: Refresh Alarms"
+    }],
     "viewsContainers": {
       "activitybar": [
         {
@@ -90,6 +123,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch": "^3.529.1",
+    "@aws-sdk/credential-providers": "^3.535.0",
     "@aws-sdk/shared-ini-file-loader": "^3.374.0",
     "@vscode/codicons": "^0.0.35",
     "@vscode/webview-ui-toolkit": "^1.4.0",

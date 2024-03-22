@@ -11,6 +11,7 @@ import { EXTENSION_URI } from './constants/extension-uri';
 import { VSCODE_WINDOW } from './constants/vscode';
 import { ExtensionManager } from './extension-manager';
 import { AlarmsService } from './services/alarms.service';
+import { AWSService } from './services/aws.service';
 import { SidebarProvider } from './services/sidebar.provider';
 
 interface ContainerSetup {
@@ -46,7 +47,8 @@ function setupContainer(context: ExtensionContext) {
 		services: [
 			AlarmsService,
 			SidebarProvider,
-			ExtensionManager
+			ExtensionManager,
+			AWSService
 		],
 		constants: [
 			[VSCODE_WINDOW, vscode.window],

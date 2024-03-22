@@ -7,26 +7,35 @@ import {
   MetricAlarm,
   StateValue,
 } from '@aws-sdk/client-cloudwatch';
-import { injectable } from 'inversify';
-import { interval, map, Observable, pairwise, startWith, Subscription, switchMap } from 'rxjs';
+import { fromIni } from '@aws-sdk/credential-providers';
+import { inject, injectable } from 'inversify';
+import { combineLatest, interval, map, Observable, pairwise, ReplaySubject, startWith, Subscription, switchMap } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
 import * as vscode from 'vscode';
 
-import { CloudWatchAlarm } from './cloud-watch-alarm';
+import { AWSService } from './aws.service';
+import { CloudWatchAlarm, CloudWatchAlarmsPerProfile, CloudWatchAlarmsPerRegion } from './cloud-watch-alarm';
 
 @injectable()
 export class AlarmsService {
+  public requestRefresh(): void {
+    this._manualTrigger.next(Date.now());
+  }
+
   private readonly _alarmBaseUrl = (region: string) => `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#alarmsV2:alarm/`;
   private readonly _intervalPeriod = 10000;
-  private _alarms!: Observable<CloudWatchAlarm[]>;
+  private readonly _manualTrigger = new ReplaySubject<number>();
+  private _refreshTrigger: Observable<any>|null = null;
+  private _alarms!: Observable<CloudWatchAlarmsPerProfile>;
   private _freshAlerts!: Observable<CloudWatchAlarm[]>;
   private _subscription: Subscription|null = null;
   private _lastRetrievalError: string|null = null;
 
-  public get alarms() : Observable<CloudWatchAlarm[]> {
+  public get alarms() : Observable<CloudWatchAlarmsPerProfile> {
     return this._alarms;
   }
 
+  public constructor(@inject(AWSService) private readonly _awsService: AWSService) { }
 
   public shutdown() {
     if (!this._subscription) {
@@ -40,13 +49,20 @@ export class AlarmsService {
   public initialize() {
     this._subscription = new Subscription();
 
-    this._alarms = interval(this._intervalPeriod)
+    this._refreshTrigger = combineLatest([
+      interval(this._intervalPeriod),
+      this._manualTrigger
+    ]);
+    this._alarms = this._refreshTrigger!
       .pipe(startWith(0))
       .pipe(map(() => vscode.workspace.getConfiguration('hobart2967.aws-cloudwatch-alarms').get("regions")! as string[]))
       .pipe(switchMap(regions => this.getAlarmsForProfilesAndRegions(regions)))
       .pipe(share());
 
-    this._freshAlerts = this._alarms
+    const flatAlerts = this._alarms
+      .pipe(map(alarmsPerProfile => this.flattenAlarms(alarmsPerProfile)));
+
+    this._freshAlerts = flatAlerts
       .pipe(
         startWith([]),
         pairwise())
@@ -81,20 +97,42 @@ export class AlarmsService {
       }));
   }
 
-  private async getAlarmsForProfilesAndRegions(regions: string[]): Promise<CloudWatchAlarm[]> {
-    try {
-      const alarms = await Promise.all(regions.map(region => this.getAlarms('default', region)));
-      return alarms.reduce((prev, cur) => ([
+  public flattenAlarms(alarmsPerProfile: CloudWatchAlarmsPerProfile): CloudWatchAlarm[] {
+    return Object
+      .entries(alarmsPerProfile)
+      .reduce((prev, [_, alarmsInProfile]) => [
         ...prev,
-        ...cur
-      ]), []);
+        ...Object
+          .entries(alarmsInProfile)
+          .reduce((prev, [_, alarmsInRegion]) => [
+            ...prev,
+            ...alarmsInRegion
+          ], [] as CloudWatchAlarm[])
+      ], [] as CloudWatchAlarm[]);
+  }
+
+  private async getAlarmsForProfilesAndRegions(regions: string[]): Promise<CloudWatchAlarmsPerProfile> {
+    try {
+      const alarms: CloudWatchAlarmsPerProfile = (await Promise
+        .all(this._awsService
+          .getSelectedProfiles()
+          .map(async (profile) => ({
+            [profile]: (await Promise.all(
+              regions.map(async (region) => ({
+                [region]: await this.getAlarms(profile, region)
+              }))))
+              .reduce((prev, cur) => ({ ...prev, ...cur }), {} as CloudWatchAlarmsPerRegion)
+          }))))
+        .reduce((prev, cur) => ({ ...prev, ...cur }), {} as CloudWatchAlarmsPerProfile);
+
+      return alarms;
     } catch (error) {
       const errorMessage = (error as Error).message;
       if (this._lastRetrievalError !== errorMessage) {
         this._lastRetrievalError = errorMessage;
         vscode.window.showErrorMessage('Could not retrieve alarm information: ' + errorMessage);
       }
-      return [];
+      return {};
     }
   }
 
@@ -115,6 +153,12 @@ export class AlarmsService {
     const config: CloudWatchClientConfig = {
       region
     };
+
+    if (vscode.workspace
+        .getConfiguration('hobart2967.aws-cloudwatch-alarms')
+        .get("credentials-source")! as string === 'profile') {
+      config.credentials = fromIni({ profile });
+    }
 
     const client = new CloudWatchClient(config);
 
