@@ -2,7 +2,7 @@
   "name": "aws-cloudwatch-alarms",
   "displayName": "aws-cloudwatch-alarms",
   "description": "Notifies you about triggered alarms within VSCode",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "publisher": "hobart2967",
   "author": {
     "name": "Hobart2967",
@@ -56,19 +56,24 @@
         }
       }
     },
-    "commands": [{
-      "command": "hobart2967.aws-cloudwatch-alarms.pick-profiles",
-      "title": "AWS CloudWatch Alarms: Pick profiles to query"
-    },{
-      "command": "hobart2967.aws-cloudwatch-alarms.pick-credentials-source",
-      "title": "AWS CloudWatch Alarms: Pick credentials source"
-    },{
-      "command": "hobart2967.aws-cloudwatch-alarms.pick-regions",
-      "title": "AWS CloudWatch Alarms: Pick regions to query"
-    }, {
-      "command": "hobart2967.aws-cloudwatch-alarms.refresh-alarms",
-      "title": "AWS CloudWatch Alarms: Refresh Alarms"
-    }],
+    "commands": [
+      {
+        "command": "hobart2967.aws-cloudwatch-alarms.pick-profiles",
+        "title": "AWS CloudWatch Alarms: Pick profiles to query"
+      },
+      {
+        "command": "hobart2967.aws-cloudwatch-alarms.pick-credentials-source",
+        "title": "AWS CloudWatch Alarms: Pick credentials source"
+      },
+      {
+        "command": "hobart2967.aws-cloudwatch-alarms.pick-regions",
+        "title": "AWS CloudWatch Alarms: Pick regions to query"
+      },
+      {
+        "command": "hobart2967.aws-cloudwatch-alarms.refresh-alarms",
+        "title": "AWS CloudWatch Alarms: Refresh Alarms"
+      }
+    ],
     "viewsContainers": {
       "activitybar": [
         {
