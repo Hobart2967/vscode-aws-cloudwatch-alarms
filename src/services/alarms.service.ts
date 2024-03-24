@@ -150,6 +150,28 @@ export class AlarmsService {
   }
 
   private async getAlarms(profile: string, region: string): Promise<Array<CloudWatchAlarm>> {
+    if (process.env.CW_TEST_MODE) {
+      return [{
+        region: 'eu-central-1',
+        AlarmName: 'database-usage-high-alarm',
+        StateValue: StateValue.OK,
+        AlarmArn: 'database-usage-high-alarm',
+        StateUpdatedTimestamp: new Date()
+      }, {
+        region: 'eu-central-1',
+        AlarmName: 'lambda-errors-alarm',
+        StateValue: StateValue.OK,
+        AlarmArn: 'lambda-errors-alarm',
+        StateUpdatedTimestamp: new Date()
+      }, {
+        region: 'us-east-1',
+        AlarmName: 'requests-dlq-alarm',
+        StateValue: StateValue.ALARM,
+        AlarmArn: 'requests-dlq-alarm',
+        StateUpdatedTimestamp: new Date()
+      }];
+    }
+
     const config: CloudWatchClientConfig = {
       region
     };
