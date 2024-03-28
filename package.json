@@ -1,6 +1,6 @@
 {
   "name": "aws-cloudwatch-alarms",
-  "displayName": "aws-cloudwatch-alarms",
+  "displayName": "AWS CloudWatch Alarms & Notifications",
   "description": "Notifies you about triggered alarms within VSCode",
   "version": "1.1.0",
   "publisher": "hobart2967",
@@ -17,8 +17,10 @@
     "vscode": "^1.87.0"
   },
   "categories": [
+		"Testing",
     "Other"
   ],
+	"keywords": ["aws", "cloudwatch", "alarms", "monitoring", "notification"],
   "activationEvents": [
     "onStartupFinished"
   ],

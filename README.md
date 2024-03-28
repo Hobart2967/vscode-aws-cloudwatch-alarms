@@ -12,6 +12,7 @@ This includes:
 - You can configure different regions.
 - Inspect the alarm directly in the browser by clicking the deep-link
 - Find alarms in big lists quickly, by filtering the alarms through the search field.
+- Support for multiple accounts: Request alerts from multiple profiles simultaneously
 
 ![](./docs/sidebar.png)
 ![](./docs/notification.png)
@@ -34,12 +35,9 @@ This extension contributes the following settings:
 
 ## Known Issues
 
-Currently, only the environment variables configured for your AWS CLI can be used.
+Currently, there's no support for the AWS SSO way to login. Please use profiles or environment variables instead.
 
 ## Feature ideas coming next releases:
 
-- Support multiple accounts
-  - first by having an option to switch between them
-  - request alerts from multiple-accounts simultaneously
 - Show alarm details within VS Code directly.
 - Mark specific alarms as favorites, to monitor the most important ones
